@@ -81,16 +81,20 @@ function calculate() {
 }
 
 function formatResult(text) {
-    let parts = text.split(" ");
-    if (parts.length >= 4) {
+    // Split only on the first occurrence of " pays "
+    let parts = text.split(" pays ");
+    if (parts.length === 2) {
+        let payer = parts[0];
+        let [receiver, amount] = parts[1].split(/ (?=\$)/); 
         return `<p class="text-white font-medium">
-                  <span class="font-bold">${parts[0]}</span> pays 
-                  <span class="font-bold">${parts[2]}</span> 
-                  <span class="font-bold">${parts[3]}</span>
+                  <span class="font-bold">${payer}</span> pays 
+                  <span class="font-bold">${receiver}</span> 
+                  <span class="font-bold">${amount}</span>
                 </p>`;
     }
     return `<p class="text-white">${text}</p>`;
 }
+
 
 function calculateBills(people) {
     const total = people.reduce((sum, p) => sum + p.amount, 0);
@@ -120,3 +124,4 @@ function calculateBills(people) {
 function saveNamesOnly() {
     localStorage.setItem("fairshare", JSON.stringify(people.map(p => ({ name: p.name }))));
 }
+
