@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FairShare</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            'deep-purple': '#3b0a45',
+            'accent-purple': '#6d28d9',
+          }
+        }
+      }
+    }
+  </script>
+  <script src="script.js" defer></script>
+</head>
+<body class="bg-deep-purple text-white min-h-screen flex flex-col items-center px-4 font-sans">
+  <div class="w-full max-w-md mt-10 bg-gradient-to-b from-purple-800 to-purple-900 rounded-2xl p-6 shadow-xl">
+    <h1 class="text-3xl font-bold text-center mb-6">FairShare</h1>
+
+    <!-- People list -->
+    <div id="people-list" class="space-y-3 mb-4"></div>
+
+    <!-- Add person -->
+    <div class="flex gap-2 mb-5">
+      <input id="nameInput" type="text" placeholder="Name"
+        class="flex-1 px-3 py-2 rounded-lg bg-purple-700 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-accent-purple">
+      <button onclick="addPerson()" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg text-white font-medium shadow">Add</button>
+    </div>
+
+    <!-- Calculate -->
+    <button onclick="calculate()" class="w-full bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-medium shadow mb-4">Calculate</button>
+
+    <!-- Results -->
+    <div id="results" class="hidden bg-purple-700/70 backdrop-blur-md p-4 rounded-lg shadow space-y-1"></div>
+  </div>
+</body>
+</html>
