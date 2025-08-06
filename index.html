@@ -19,6 +19,33 @@
       }
     }
   </script>
+
+  <style>
+    /* --- MOBILE FIX FOR INPUT UNDERLINE --- */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type=number] {
+      -webkit-appearance: none;
+      appearance: none;
+      background-color: transparent;
+      border: none;
+      border-bottom: 2px solid #fff;
+      padding: 0;
+      text-align: right;
+      width: 6rem;
+      font-size: 1rem;
+    }
+
+    input[type=number]:focus {
+      outline: none;
+      border-bottom-color: #ddd;
+    }
+  </style>
+
   <script src="script.js" defer></script>
 </head>
 <body class="bg-deep-purple text-white min-h-screen flex flex-col items-center px-4 font-sans">
@@ -36,31 +63,10 @@
     </div>
 
     <!-- Calculate -->
-    <button onclick="calculate()" 
-    class="w-full bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-medium mb-4 focus:outline-none focus:ring-0 border-none shadow-none">
-    Calculate
-    </button>
-
+    <button onclick="calculate()" class="w-full bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-medium shadow mb-4">Calculate</button>
 
     <!-- Results -->
     <div id="results" class="hidden bg-purple-700/70 backdrop-blur-md p-4 rounded-lg shadow space-y-1"></div>
   </div>
-
-  <template id="person-template">
-    <div class="flex items-center justify-between w-full px-3 py-2 bg-purple-600 rounded-lg">
-      <span class="font-bold text-white truncate max-w-[45%]"></span>
-      <input 
-        type="text" 
-        placeholder="$0.00"
-        class="amount-input text-right bg-transparent outline-none border-b border-white ml-2 flex-shrink-0 w-20 sm:w-24 md:w-28 text-white"
-        onfocus="this.value=''" 
-        onblur="formatCurrency(this)">
-      <button 
-        class="ml-2 text-pink-400 hover:text-pink-600 font-bold text-lg"
-        onclick="removePerson(this)">
-        ×
-      </button>
-    </div>
-  </template>
 </body>
 </html>
