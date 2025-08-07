@@ -92,11 +92,11 @@ function formatResult(text) {
     let [receiver, amount] = parts[1].split(/ (?=\$)/);
 
     return `
-      <div class="grid grid-cols-[30%_15%_30%_25%] gap-2 w-[calc(100%-32px)] text-white font-medium items-center border-b border-white/20 pb-2 mb-2 last:border-b-0 last:pb-0 last:mb-0">        
-        <div class="py-1 text-left font-semibold truncate">${payer}</div>
-        <div class="py-1 text-left font-normal">pays</div>
-        <div class="py-1 text-left font-semibold truncate">${receiver}</div>
-        <div class="py-1 text-right text-lg font-semibold whitespace-nowrap">${amount}</div>
+      <div class="grid grid-cols-[33%_13%_33%_21%] gap-2 w-[calc(100%-32px)] text-white items-center border-b border-white/20 pb-2 mb-2 last:border-b-0 last:pb-0 last:mb-0">        
+        <div class="py-1 text-left text-sm font-semibold truncate">${payer}</div>
+        <div class="py-1 text-left text-sm">pays</div>
+        <div class="py-1 text-left text-sm font-semibold truncate">${receiver}</div>
+        <div class="py-1 text-right text-normal font-semibold whitespace-nowrap">${amount}</div>
       </div>`;
   }
     return '';
