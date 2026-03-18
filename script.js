@@ -1,5 +1,17 @@
-// Load saved names from localStorage, reset amounts to 0
-let saved = JSON.parse(localStorage.getItem("fairshare") || "[]");
+function setCookie(name, value, days) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+}
+
+function getCookie(name) {
+  return document.cookie.split("; ").reduce((result, c) => {
+    const [k, v] = c.split("=");
+    return k === name ? decodeURIComponent(v) : result;
+  }, null);
+}
+
+// Load saved names from cookie, reset amounts to 0
+let saved = JSON.parse(getCookie("fairshare") || "[]");
 let people = saved.map((p) => ({ name: p.name, amount: 0 }));
 
 // Initial render
@@ -11,17 +23,18 @@ function renderList() {
   list.innerHTML = "";
 
   people.forEach((p, i) => {
+    const initial = p.name.charAt(0).toUpperCase();
     list.innerHTML += `
-      <div class="flex items-center bg-purple-700/70 backdrop-blur-sm px-3 py-2 rounded-lg shadow">
-        <span class="font-bold text-lg w-44 truncate">${p.name}</span>
-        <input type="text" 
-               value="${p.amount ? formatCurrencyValue(p.amount) : ""}" 
-               onfocus="clearInput(this)" 
-               onblur="updateAmount(${i}, this.value); formatCurrency(this)" 
-               class="bg-transparent border-b-2 border-white text-right flex-shrink-0 w-28 h-8 leading-8 focus:outline-none focus:border-blue-300 placeholder-gray-400 ml-auto"
+      <div class="person-row">
+        <div class="avatar">${initial}</div>
+        <span class="person-name">${p.name}</span>
+        <input type="text"
+               class="amount-input"
+               value="${p.amount ? formatCurrencyValue(p.amount) : ""}"
+               onfocus="clearInput(this)"
+               onblur="updateAmount(${i}, this.value); formatCurrency(this)"
                placeholder="$0.00">
-        <button onclick="removePerson(${i})" 
-                class="text-red-300 hover:text-red-500 font-bold text-xl ml-3 flex-shrink-0">×</button>
+        <button class="remove-btn" onclick="removePerson(${i})">×</button>
       </div>`;
   });
 }
@@ -74,15 +87,42 @@ function updateAmount(i, value) {
 }
 
 // Calculate payments and display results
+let copyText = "";
+
 function calculate() {
   let results = calculateBills(people);
   const resultsDiv = document.getElementById("results");
+  const content = document.getElementById("results-content");
 
-  resultsDiv.innerHTML = results.length
+  content.innerHTML = results.length
     ? results.map((r) => formatResult(r)).join("")
-    : "<p class='text-gray-200'>All expenses are balanced.</p>";
+    : "<p class='balanced-msg'>Everyone's square! 🎉</p>";
 
-  resultsDiv.classList.remove("hidden");
+  resultsDiv.classList.add("visible");
+
+  const paidLines = people
+    .filter((p) => p.amount > 0)
+    .map((p) => `${p.name}: ${formatCurrencyValue(p.amount)}`)
+    .join("\n");
+
+  const settlementLines = results.join("\n");
+
+  copyText = paidLines
+    ? `Paid:\n${paidLines}\n\nSettlements:\n${settlementLines || "Everyone's square!"}`
+    : `Settlements:\n${settlementLines || "Everyone's square!"}`;
+}
+
+function copyResults() {
+  if (!copyText) return;
+  navigator.clipboard.writeText(copyText).then(() => {
+    const btn = document.getElementById("copy-btn");
+    btn.textContent = "Copied!";
+    btn.classList.add("copied");
+    setTimeout(() => {
+      btn.textContent = "Copy";
+      btn.classList.remove("copied");
+    }, 2000);
+  });
 }
 
 function formatResult(text) {
@@ -92,14 +132,14 @@ function formatResult(text) {
     let [receiver, amount] = parts[1].split(/ (?=\$)/);
 
     return `
-      <div class="grid grid-cols-[33%_13%_33%_21%] gap-2 w-[calc(100%-32px)] text-white items-center border-b border-white/20 pb-2 mb-2 last:border-b-0 last:pb-0 last:mb-0">        
-        <div class="py-1 text-left text-sm font-semibold truncate">${payer}</div>
-        <div class="py-1 text-left text-sm">pays</div>
-        <div class="py-1 text-left text-sm font-semibold truncate">${receiver}</div>
-        <div class="py-1 text-right text-normal font-semibold whitespace-nowrap">${amount}</div>
+      <div class="result-row">
+        <span class="result-name payer">${payer}</span>
+        <div class="result-arrow"></div>
+        <span class="result-name receiver">${receiver}</span>
+        <span class="amount-badge">${amount}</span>
       </div>`;
   }
-    return '';
+  return "";
 }
 
 // Bill-splitting algorithm
@@ -138,10 +178,7 @@ function calculateBills(people) {
   return results;
 }
 
-// Save names to localStorage, leaving amounts blank
+// Save names to cookie, leaving amounts blank
 function saveNamesOnly() {
-  localStorage.setItem(
-    "fairshare",
-    JSON.stringify(people.map((p) => ({ name: p.name })))
-  );
+  setCookie("fairshare", JSON.stringify(people.map((p) => ({ name: p.name }))), 365);
 }
